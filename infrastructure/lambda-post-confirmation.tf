@@ -73,9 +73,6 @@ resource "aws_iam_policy" "dynamo_post_confirmation_lambda_policy" {
   })
 }
 
-output "account_id" {
-  value = local.account_id
-}
 resource "aws_lambda_permission" "allow_cognito" {
   statement_id  = "AllowExecutionFromCognito"
   action        = "lambda:InvokeFunction"

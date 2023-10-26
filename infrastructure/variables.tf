@@ -21,3 +21,7 @@ variable "apigw_log_retention" {
 variable "post_confirmation_lambda_name" {
   default = "dev1-post-confirmation"
 }
+
+variable "pets_api_lambda_name" {
+  default = "dev1-pets-api-lambda"
+}
