@@ -12,6 +12,9 @@ The env.sh will take care that terraform has access to these env variables
 Perhaps the script will need to be made executable with:
 chmod u+x env.sh
 
+terraform plan -out='outplan'
+terraform apply -auto-aprove "outplan"
+
 TODOs: 
 implement SES
 rds proxy
