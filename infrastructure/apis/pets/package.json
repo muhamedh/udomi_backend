@@ -7,8 +7,8 @@
     "test": "jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "build": "esbuild ./src/handler.ts --bundle --outfile=./build/index.js",
-    "build-prod": "esbuild ./src/handler.ts --bundle --minify --platform=node --outfile=./build/index.js",
+    "build": "esbuild ./src/handler.ts --bundle --platform=node --outfile=./build/handler.js",
+    "build-prod": "esbuild ./src/handler.ts --bundle --minify --platform=node --outfile=./build/handler.js",
     "clean": "tsc --build --clean"
   },
   "author": "Muhamed Hamzic",
@@ -17,7 +17,11 @@
     "@aws-sdk/client-dynamodb": "^3.425.0",
     "@aws-sdk/lib-dynamodb": "^3.425.0",
     "@aws-sdk/util-dynamodb": "^3.436.0",
-    "axios": "^1.5.1",
+    "@fastify/aws-lambda": "^3.4.2",
+    "@middy/core": "^4.6.5",
+    "@middy/http-cors": "^4.6.5",
+    "@middy/http-router": "^4.6.5",
+    "@schibsted/middy-cors": "^3.0.1",
     "jsonwebtoken": "^9.0.2",
     "uuid": "^9.0.1"
   },

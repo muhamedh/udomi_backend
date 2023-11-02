@@ -6,7 +6,7 @@ resource "aws_lambda_function" "pets_api" {
   s3_key    = aws_s3_object.pets_api_lambda.key
 
   runtime = "nodejs18.x"
-  handler = "index.handler"
+  handler = "handler.handler"
 
   source_code_hash = data.archive_file.pets_api_lambda_zip.output_base64sha256
 
