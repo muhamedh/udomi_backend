@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { docClient } from "../../clients/dynamodb";
 import { getUserId } from "../../helpers/jwt";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { marshall } from "@aws-sdk/util-dynamodb";
 
 export const addPet = middy().handler(
   async (
@@ -22,7 +23,7 @@ export const addPet = middy().handler(
       Item: {
         id: userId,
         pet_id: `PET_ID#${uuidv4()}`,
-        data: event?.body ? event?.body : {},
+        data: event?.body ? JSON.parse(event?.body) : {},
       },
     });
     try {

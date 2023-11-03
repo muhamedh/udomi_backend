@@ -11,7 +11,7 @@ export const handler = async (event: any, context: any) => {
     TableName: process.env.USER_TABLE,
     Item: {
       id: event?.request?.userAttributes?.sub,
-      pet_id: "PET_ID#",
+      pet_id: "USER_TYPE#REGULAR_USER",
       email: event?.request?.userAttributes?.email,
     },
   });
