@@ -20,16 +20,17 @@ export const getMyPets = middy().handler(
     const userId = getUserId(event?.headers?.Authorization);
     const command = new QueryCommand({
       TableName: process.env.USER_TABLE,
-      KeyConditionExpression: "id = :id",
+      KeyConditionExpression: "id = :id and begins_with(pet_id, :pet_id)",
       ExpressionAttributeValues: {
         ":id": { S: userId },
+        ":pet_id": { S: "PET_ID#" },
       },
     });
     try {
       let data = await docClient.send(command);
       return {
         statusCode: 200,
-        body: data.Items ? JSON.stringify(data.Items) : ([] as any),
+        body: data?.Items ? JSON.stringify(data.Items) : ([] as any),
       };
     } catch (e) {
       console.log(`Database fetch failed with message ${e}`);

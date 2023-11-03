@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GET /pets/my Should return 200 status code and user's pets 1`] = `
+{
+  "body": "[{"email":{"S":"dummy@email.com"},"id":{"S":"dummy-user-id"},"data":{"S":"{\\"phoneNumber\\":\\"2312312\\"}"},"pet_id":{"S":"PET_ID#"}},{"id":{"S":"dummy-user-id"},"data":{"S":"{\\"petName\\":\\"Dummy Pet Name\\",\\"location\\":\\"Dummy Location\\",\\"vaccinatedStatus\\":\\"VACCINATED\\",\\"chippedStatus\\":\\"CHIPPED\\",\\"shortDescription\\":\\"Dummy Short Description\\"}"},"pet_id":{"S":"PET_ID#8312d226-7c90-4ec4-a4df-8def0ece1bcb"}}]",
+  "headers": {
+    "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+    "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
+    "Access-Control-Allow-Origin": "*",
+  },
+  "statusCode": 200,
+}
+`;
