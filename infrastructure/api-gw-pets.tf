@@ -111,7 +111,7 @@ resource "aws_api_gateway_deployment" "pets_deployment" {
       # aws_api_gateway_method.options_method.id
     ]))
   }
-  depends_on = [ aws_api_gateway_rest_api.pets_api ]
+  depends_on = [aws_api_gateway_rest_api.pets_api]
   lifecycle {
     create_before_destroy = true
   }

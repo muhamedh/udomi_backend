@@ -36,5 +36,5 @@ terraform plan -out='outplan'
 ~~~
 If the plan matches your expectations, apply it.
 ~~~bash
-terraform apply -auto-aprove "outplan"
+terraform apply -auto-approve "outplan"
 ~~~
