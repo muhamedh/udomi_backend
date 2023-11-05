@@ -28,8 +28,9 @@ export const handler = middy()
   .handler(httpRouterHandler(routes))
   .use(
     cors({
-      origin: '*',
-      methods: 'OPTIONS,GET,POST',
-      headers: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
+      origin: "*",
+      methods: "OPTIONS,GET,POST",
+      headers:
+        "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
     })
   );

@@ -15,7 +15,8 @@ resource "aws_lambda_function" "pets_api" {
 
   environment {
     variables = {
-      USER_TABLE = "${aws_dynamodb_table.users_table.name}"
+      USER_TABLE              = "${aws_dynamodb_table.users_table.name}"
+      PETS_PHOTOS_BUCKET_NAME = "${aws_s3_bucket.pet_photos_bucket.id}"
     }
   }
 }
@@ -47,9 +48,15 @@ resource "aws_iam_role_policy_attachment" "pets_api_lambda_policy" {
   role       = aws_iam_role.pets_api_lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
+
 resource "aws_iam_role_policy_attachment" "dynamo_pets_api_lambda_policy_attachment" {
   role       = aws_iam_role.pets_api_lambda_exec.name
   policy_arn = aws_iam_policy.dynamo_pets_api_lambda_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "s3_pets_api_lambda_policy_attachment" {
+  role       = aws_iam_role.pets_api_lambda_exec.name
+  policy_arn = aws_iam_policy.s3_pets_api_lambda_policy.arn
 }
 
 resource "aws_iam_policy" "dynamo_pets_api_lambda_policy" {
@@ -72,6 +79,25 @@ resource "aws_iam_policy" "dynamo_pets_api_lambda_policy" {
     ]
   })
 }
+
+resource "aws_iam_policy" "s3_pets_api_lambda_policy" {
+  name        = "s3_pets_api_lambda_policy"
+  description = "s3_pets_api_lambda_policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:ListObjectsV2"
+      ],
+      Effect   = "Allow"
+      Resource = ["${aws_s3_bucket.pet_photos_bucket.arn}", "${aws_s3_bucket.pet_photos_bucket.arn}/*"]
+    }]
+  })
+}
+
+
 
 resource "aws_lambda_permission" "api_gw_pets" {
   statement_id  = "AllowExecutionFromAPIGateway"

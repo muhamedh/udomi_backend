@@ -35,6 +35,7 @@ resource "aws_api_gateway_integration" "lambda_pets_api_integration" {
   uri                     = aws_lambda_function.pets_api.invoke_arn
   type                    = "AWS_PROXY"
   integration_http_method = "POST"
+  depends_on = [ aws_api_gateway_method.proxy_pets_method ]
 }
 #create a OPTIONS method for CORS needs /{proxy+}
 resource "aws_api_gateway_method" "options_method" {
@@ -52,6 +53,7 @@ resource "aws_api_gateway_method_response" "options_200" {
   status_code = "200"
   response_models = {
     "application/json" = "Empty"
+    "multipart/form-data" = "Empty"
   }
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = true,
@@ -69,6 +71,7 @@ resource "aws_api_gateway_integration" "options_integration" {
   type        = "MOCK"
   request_templates = {
     "application/json" = "{statusCode: 200}"
+    "multipart/form-data" = "{statusCode: 200}"
   }
   depends_on = [aws_api_gateway_method.options_method]
 }
@@ -111,7 +114,7 @@ resource "aws_api_gateway_deployment" "pets_deployment" {
       # aws_api_gateway_method.options_method.id
     ]))
   }
-  depends_on = [ aws_api_gateway_rest_api.pets_api ]
+  depends_on = [aws_api_gateway_rest_api.pets_api]
   lifecycle {
     create_before_destroy = true
   }

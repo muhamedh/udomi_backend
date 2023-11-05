@@ -15,11 +15,13 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.425.0",
+    "@aws-sdk/client-s3": "^3.441.0",
     "@aws-sdk/lib-dynamodb": "^3.425.0",
     "@aws-sdk/util-dynamodb": "^3.436.0",
     "@fastify/aws-lambda": "^3.4.2",
     "@middy/core": "^4.6.5",
     "@middy/http-cors": "^4.6.5",
+    "@middy/http-multipart-body-parser": "^4.6.5",
     "@middy/http-router": "^4.6.5",
     "@schibsted/middy-cors": "^3.0.1",
     "jsonwebtoken": "^9.0.2",
