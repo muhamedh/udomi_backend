@@ -8,7 +8,6 @@ import { s3Client } from "../../clients/s3";
 import { getUserId } from "../../helpers/jwt";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-import fs from "fs";
 
 type MultiPartFormEvent = {
   headers: { Authorization: string };
@@ -33,19 +32,14 @@ type MultiPartFormEvent = {
 };
 const uploadImages = async (images: any, userId: string, petId: string) => {
   //TODO optimize using async await.
-  
+  console.log(images);
   for( let i = 0; i < images.length; i++ ) {
-    console.log("Image", images[i].content.Buffer);
-    const buffer = Buffer.from(images[i].content);
-    console.log("Buffer", buffer);
-    console.log("Buffer lenght", buffer.length);
     const command = new PutObjectCommand({
       Bucket: process.env.PETS_PHOTOS_BUCKET_NAME,
-      Key: `${petId}/pet-photo-${i}`,
-      Body:  buffer,
+      Key: `${petId}/${images[i].filename}`,
+      Body:  images[i].content,
       ContentType: images[i].mimetype,
       ContentEncoding: images[i].encoding,
-      ContentLength: buffer.length,
     });
     try{
       const response = await s3Client.send(command);

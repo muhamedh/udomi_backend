@@ -5,8 +5,7 @@ import {
   Context,
 } from "aws-lambda";
 
-import { QueryCommand, QueryCommandOutput } from "@aws-sdk/client-dynamodb";
-import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { QueryCommand } from "@aws-sdk/client-dynamodb";
 import { docClient } from "../../clients/dynamodb";
 import { getUserId } from "../../helpers/jwt";
 
