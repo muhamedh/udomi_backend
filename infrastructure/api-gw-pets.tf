@@ -4,6 +4,7 @@ resource "aws_api_gateway_rest_api" "pets_api" {
   endpoint_configuration {
     types = ["REGIONAL"]
   }
+  binary_media_types = [ "multipart/form-data", "/image/jpg", "image/jpeg" ]
 }
 
 # set authorizer for whole API resource

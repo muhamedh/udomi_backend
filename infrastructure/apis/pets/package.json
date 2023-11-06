@@ -17,6 +17,7 @@
     "@aws-sdk/client-dynamodb": "^3.425.0",
     "@aws-sdk/client-s3": "^3.441.0",
     "@aws-sdk/lib-dynamodb": "^3.425.0",
+    "@aws-sdk/s3-request-presigner": "^3.441.0",
     "@aws-sdk/util-dynamodb": "^3.436.0",
     "@fastify/aws-lambda": "^3.4.2",
     "@middy/core": "^4.6.5",
