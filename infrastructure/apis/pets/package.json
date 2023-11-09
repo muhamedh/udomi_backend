@@ -22,6 +22,7 @@
     "@fastify/aws-lambda": "^3.4.2",
     "@middy/core": "^4.6.5",
     "@middy/http-cors": "^4.6.5",
+    "@middy/http-error-handler": "^4.6.6",
     "@middy/http-multipart-body-parser": "^4.6.5",
     "@middy/http-router": "^4.6.5",
     "@schibsted/middy-cors": "^3.0.1",

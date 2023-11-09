@@ -4,6 +4,7 @@ import {
   APIGatewayProxyResult,
   Context,
 } from "aws-lambda";
+import cors from "@middy/http-cors";
 
 import { QueryCommand } from "@aws-sdk/client-dynamodb";
 import { docClient } from "../../clients/dynamodb";
@@ -23,7 +24,6 @@ type DynamoDBPet = {
       vaccinatedStatus: { S: string };
     };
   };
-  location: { S : string }
   numberOfPhotos: { N: string };
   photoNames: { L: { S: string }[] };
   id: { S: string };
@@ -60,12 +60,10 @@ export const getMyPets = middy().handler(
   ): Promise<APIGatewayProxyResult> => {
     console.log("Proceeding with my pet fetch");
 
-    const userId = getUserId(event?.headers?.Authorization);
     const command = new QueryCommand({
       TableName: process.env.USER_TABLE,
       KeyConditionExpression: "id = :id and begins_with(pet_id, :pet_id)",
       ExpressionAttributeValues: {
-        ":id": { S: userId },
         ":pet_id": { S: "PET_ID#" },
       },
     });
