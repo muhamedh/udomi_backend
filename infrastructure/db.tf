@@ -16,6 +16,19 @@ resource "aws_dynamodb_table" "users_table" {
     type = "S"
   }
 
+  attribute {
+    name = "location"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "location-index"
+    hash_key        = "location"
+    write_capacity  = 1
+    read_capacity   = 1
+    projection_type = "ALL"
+  }
+
   tags = {
     Name        = "dev1-user-table"
     Environment = "dev1"

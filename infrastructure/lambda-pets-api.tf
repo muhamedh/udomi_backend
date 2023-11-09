@@ -89,10 +89,18 @@ resource "aws_iam_policy" "s3_pets_api_lambda_policy" {
       Action = [
         "s3:PutObject",
         "s3:GetObject",
-        "s3:ListObjectsV2"
+        "s3:ListObjectsV2",
+        "s3:DeleteObject",
       ],
       Effect   = "Allow"
       Resource = ["${aws_s3_bucket.pet_photos_bucket.arn}", "${aws_s3_bucket.pet_photos_bucket.arn}/*"]
+      },
+      {
+        Action = [
+          "s3:ListBucket"
+        ],
+        Effect   = "Allow"
+        Resource = ["${aws_s3_bucket.pet_photos_bucket.arn}"]
     }]
   })
 }
