@@ -4,14 +4,13 @@ import {
   APIGatewayProxyResult,
   Context,
 } from "aws-lambda";
-import cors from "@middy/http-cors";
 
-import { QueryCommand } from "@aws-sdk/client-dynamodb";
+import { ScanCommand } from "@aws-sdk/client-dynamodb";
 import { docClient } from "../../clients/dynamodb";
-import { getUserId } from "../../helpers/jwt";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3Client } from "src/clients/s3";
+import { s3Client } from "../../clients/s3";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 
 type DynamoDBPet = {
   pet_id: { S: string };
@@ -24,65 +23,88 @@ type DynamoDBPet = {
       vaccinatedStatus: { S: string };
     };
   };
+  location: { S: string };
   numberOfPhotos: { N: string };
   photoNames: { L: { S: string }[] };
   id: { S: string };
   photos: string[];
 };
-const attachPresignedURLS = async (
-  pets: DynamoDBPet[]
-): Promise<DynamoDBPet[]> => {
-  for (let i = 0; i < pets.length; i++) {
-    const presigningPromises = [];
-    for (let j = 0; j < parseInt(pets[i].numberOfPhotos.N); j++) {
-      const command = new GetObjectCommand({
-        Bucket: process.env.PETS_PHOTOS_BUCKET_NAME,
-        Key: `${pets[i].pet_id.S}/${pets[i].photoNames.L[j].S}`,
-      });
-      presigningPromises.push(
-        getSignedUrl(s3Client, command, { expiresIn: 3600 })
-      );
-    }
-    const presignedURLS: string[] = [];
-    await Promise.allSettled(presigningPromises).then((results) => {
-      for (const result of results) {
-        result.status === "fulfilled" ? presignedURLS.push(result.value) : null;
-      }
+
+const attachPresignedURLS = async (pet: any) => {
+  const presigningPromises = [];
+  for (let i = 0; i < pet.numberOfPhotos; i++) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.PETS_PHOTOS_BUCKET_NAME,
+      Key: `${pet.pet_id}/${pet.photoNames[i]}`,
     });
-    pets[i].photos = presignedURLS;
+    presigningPromises.push(
+      getSignedUrl(s3Client, command, { expiresIn: 3600 })
+    );
   }
-  return pets;
+  const presignedURLS: string[] = [];
+  await Promise.allSettled(presigningPromises).then((results) => {
+    for (const result of results) {
+      result.status === "fulfilled" ? presignedURLS.push(result.value) : null;
+    }
+  });
+  pet.photos = presignedURLS;
+  return pet;
 };
-export const getMyPets = middy().handler(
+export const getPets = middy().handler(
   async (
     event: APIGatewayProxyEvent,
     context: Context
   ): Promise<APIGatewayProxyResult> => {
     console.log("Proceeding with my pet fetch");
-
-    const command = new QueryCommand({
+    console.log("EVENT", event);
+    const params = event.queryStringParameters;
+    let limit = parseInt(params?.limit ? params.limit : "20");
+    const key_id = params?.key_id;
+    const key_pet_id = params?.key_pet_id;
+    let key = undefined;
+    // construct key
+    if (key_id && key_pet_id) {
+      key = {
+        id: { S: key_id },
+        pet_id: { S: key_pet_id },
+      };
+    }
+    if (limit > 20 || !limit) {
+      limit = 20;
+    }
+    const scanCommand = new ScanCommand({
       TableName: process.env.USER_TABLE,
-      KeyConditionExpression: "id = :id and begins_with(pet_id, :pet_id)",
-      ExpressionAttributeValues: {
-        ":pet_id": { S: "PET_ID#" },
+      FilterExpression: "attribute_exists(#location)",
+      ExpressionAttributeNames: {
+        "#location": "location",
       },
+      Limit: limit,
+      ExclusiveStartKey: key ? key : undefined,
     });
+
     try {
-      let data = await docClient.send(command);
-      let response: DynamoDBPet[] = [];
+      let data = await docClient.send(scanCommand);
+      let sanitizedData = {
+        pets: [] as any,
+        key: data.LastEvaluatedKey ? data.LastEvaluatedKey : undefined,
+      };
       if (data?.Items) {
-        response = await attachPresignedURLS(
-          data.Items as unknown as DynamoDBPet[]
-        );
-        // console.log("RESPONSE", response);
+        for (let i = 0; i < data.Items.length; i++) {
+          sanitizedData.pets.push(unmarshall(data.Items[i]));
+        }
+        for (let i = 0; i < data.Items.length; i++) {
+          sanitizedData.pets[i] = await attachPresignedURLS(
+            sanitizedData.pets[i]
+          );
+        }
       }
       return {
         statusCode: 200,
-        body: response ? JSON.stringify(response) : ([] as any),
+        body: sanitizedData ? JSON.stringify(sanitizedData) : ([] as any),
       };
     } catch (e) {
-      console.log(`Database fetch failed with message ${e}`);
-      throw Error("Database fetch failed");
+      console.log(`Database scan failed with message ${e}`);
+      throw Error("Database scan failed");
     }
   }
 );

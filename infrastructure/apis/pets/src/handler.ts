@@ -3,11 +3,13 @@ import httpRouterHandler from "@middy/http-router";
 import cors from "@middy/http-cors";
 
 import { getMyPets } from "./controllers/pets/getMyPets";
+import { getPets } from "./controllers/pets/getPets";
 import { addPet } from "./controllers/pets/addPet";
 import { editPet } from "./controllers/pets/editPet";
 import { editUser } from "./controllers/users/editUser";
 import { getLocations } from "./controllers/locations/getLocations";
 import httpErrorHandler from "@middy/http-error-handler";
+
 
 const routes: any = [
   {
@@ -24,6 +26,11 @@ const routes: any = [
     method: "PUT",
     path: "/pets",
     handler: editPet,
+  },
+  {
+    method: "GET",
+    path: "/pets-public",
+    handler: getPets,
   },
   {
     method: "POST",
